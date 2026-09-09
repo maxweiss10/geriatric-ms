@@ -33,7 +33,7 @@ def network_icon():
 
 SYMBOLS = {
  'lion': '<polygon points="0.0,-33.0 5.3,-24.5 13.4,-30.3 15.0,-20.4 24.7,-22.7 22.4,-13.0 32.3,-11.4 26.5,-3.3 35.0,2.0 26.5,7.3 32.3,15.4 22.4,17.0 24.7,26.7 15.0,24.4 13.4,34.3 5.3,28.5 0.0,37.0 -5.3,28.5 -13.4,34.3 -15.0,24.4 -24.7,26.7 -22.4,17.0 -32.3,15.4 -26.5,7.3 -35.0,2.0 -26.5,-3.3 -32.3,-11.4 -22.4,-13.0 -24.7,-22.7 -15.0,-20.4 -13.4,-30.3 -5.3,-24.5" fill="#C8742A"/><circle cx="-14" cy="-16" r="6.5" fill="#C8742A"/><circle cx="14" cy="-16" r="6.5" fill="#C8742A"/><circle cy="3" r="19" fill="#E8B458"/><circle cx="-7" cy="-1" r="2.4" fill="#3B2A14"/><circle cx="7" cy="-1" r="2.4" fill="#3B2A14"/><path d="M-4,8 L4,8 L0,13 Z" fill="#3B2A14"/><path d="M0,13 L0,17 M-6,19 C-3,22 3,22 6,19" fill="none" stroke="#3B2A14" stroke-width="1.6" stroke-linecap="round"/>',
- 'poop': '<ellipse cx="0" cy="19" rx="30" ry="12"/><ellipse cx="0" cy="5" rx="22" ry="11"/><ellipse cx="0" cy="-8" rx="15" ry="9"/><path d="M-5,-15 C-8,-26 2,-31 6,-24 C10,-30 17,-25 12,-17" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/><circle cx="-8" cy="6" r="3.2" fill="var(--paper)"/><circle cx="8" cy="6" r="3.2" fill="var(--paper)"/>',
+ 'poop': '<ellipse cx="0" cy="21" rx="31" ry="12"/><ellipse cx="0" cy="8" rx="24" ry="11"/><ellipse cx="0" cy="-5" rx="17" ry="9"/><path d="M-9,-10 C-12,-19 -4,-31 6,-31 C13,-31 12,-22 5,-17 C1,-14 -4,-12 -9,-10 Z"/><circle cx="-8" cy="10" r="3.2" fill="var(--paper)"/><circle cx="8" cy="10" r="3.2" fill="var(--paper)"/><path d="M-7,17 Q0,23 7,17" fill="none" stroke="var(--paper)" stroke-width="2" stroke-linecap="round"/>',
  'walk': '<circle cx="4" cy="-27" r="8"/><path d="M0,-16 L-3,4 M-3,4 L12,12 L10,30 M-3,4 L-13,28 M0,-13 L15,-2 M0,-13 L-15,-4" fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"/>',
  'hug': '<circle cx="-11" cy="-19" r="9"/><circle cx="12" cy="-15" r="8"/><path d="M-28,26 C-28,2 -20,-6 -11,-6 C-4,-6 0,-2 2,2 C6,-2 10,-3 12,-3 C22,-3 28,6 28,26 Z"/>',
  'pills': '<rect x="4" y="-22" width="24" height="48" rx="3"/><rect x="1" y="-30" width="30" height="9" rx="2"/><rect x="8" y="-8" width="16" height="14" fill="#fff" opacity=".35"/><g transform="translate(-16,10) rotate(-35)"><rect x="-16" y="-7" width="32" height="14" rx="7"/></g><g transform="translate(-20,-14) rotate(-35)"><rect x="-13" y="-6" width="26" height="12" rx="6"/></g>',
@@ -171,61 +171,71 @@ def positions(L):
         for i,k in enumerate(row1): P[k]=(520+(i-(n-1)/2)*180, Y1)
     return P
 
-VB = {5:(0,45,W,150), 6:(0,18,W,180), 7:(0,70,W,382), 8:(0,0,W,482), 9:(0,0,W,482), 10:(0,0,W,482)}
-for L in range(11,16): VB[L]=(0,0,W,575)
-VB[16]=(0,-100,W,675); VB[17]=(0,-100,W,675)
+VB = {5:(90,-15,870,210), 6:(90,-15,870,210), 7:(130,70,780,382), 8:(110,0,820,482), 9:(110,0,820,482), 10:(110,0,820,482)}
+for L in range(11,16): VB[L]=(110,0,930,545)
+VB[16]=(110,-100,930,645); VB[17]=(110,-100,930,645)
 
 MULTI_OFF = (40,-14); VR = 46   # Venn chain offset and radius
 def chain_center(base, k):
     return (base[0]+MULTI_OFF[0]*k, base[1]+MULTI_OFF[1]*k)
 
+def badge(x,y):
+    return (f'<circle cx="{f(x)}" cy="{f(y)}" r="10" fill="#C48A12" stroke="var(--paper)" stroke-width="1.5"/>'
+            f'<text x="{f(x)}" y="{f(y+4.2)}" class="lbl" font-size="12" font-weight="700" text-anchor="middle" fill="var(--paper)">$</text>')
+
+def crown(x, ytop):
+    pts=[(-22,6),(-22,-10),(-11,-1),(0,-15),(11,-1),(22,-10),(22,6)]
+    p=" ".join(f"{f(x+dx)},{f(ytop-8+dy)}" for dx,dy in pts)
+    return f'<polygon points="{p}" fill="#E0B62B" stroke="#8A6A00" stroke-width="1" stroke-linejoin="round"/>'
+
+BIG = 1.3
 def draw(L):
     P=positions(L); s=[]; defs=[marker_def(f"ah{L}")]
     mk=f"ah{L}"
+    big = {'matters', 'mict'}
+    def rad(k): return 42*BIG if k in big else 42
     # field lines (behind everything)
     if L>=14:
         for r in (70,150,250,370,520,700):
             s.append(f'<path d="M975,{f(250-r)} A{f(r*0.9)},{f(r)} 0 0 0 975,{f(250+r)}" class="field"/>')
+    # Multicomplexity web: relational lines to every other M
+    mx,my=P['multi']
+    for k,(x,y) in P.items():
+        if k=='multi': continue
+        if L<=6:
+            h = 26 + abs(x-mx)*0.09
+            s.append(f'<path d="M{f(mx)},{f(my-40)} Q{f((mx+x)/2)},{f(my-40-h)} {f(x)},{f(y-rad(k)+2)}" class="web"/>')
+        else:
+            s.append(f'<line x1="{f(mx)}" y1="{f(my)}" x2="{f(x)}" y2="{f(y)}" class="web"/>')
     # house
     if L>=8:
         s.append(f'<path d="M130,68 L520,12 L910,68 Z" class="house"/><rect x="130" y="68" width="780" height="{FLOOR-68}" class="house"/>')
         s.append(icon('house',474,44,34,MS['milieu']['color']) + text(497,49,'Milieu',cls='lbl',size=13,anchor='start'))
-    # Maintenance circuit: attic bus + riser + basement bus, arrowheads to every M
+    # Maintenance circuit
     if L>=7:
         s.append(f'<path d="M{RISER},{BUS_TOP} L805,{BUS_TOP} M{RISER},{BUS_TOP} L{RISER},{BUS_BOT} L805,{BUS_BOT}" class="bus"/>')
         for k in ('mind','mobility','meds','multi'):
             x,y=P[k]; s.append(f'<path d="M{f(x)},{BUS_TOP} L{f(x)},{f(y-46)}" class="bus" marker-end="url(#{mk})"/>')
         for k,(x,y) in P.items():
             if k in ('mind','mobility','meds','multi'): continue
-            lab_bottom = y+ (74 if k=='mict' else 64)
+            lab_bottom = y+ (74 if k in big else 64)
             if k=='maint':
                 s.append(f'<path d="M{f(x)},{f(lab_bottom)} L{f(x)},{BUS_BOT}" class="bus"/>')
             else:
                 s.append(f'<path d="M{f(x)},{BUS_BOT} L{f(x)},{f(lab_bottom+4)}" class="bus" marker-end="url(#{mk})"/>')
         s.append(alabel(490, 86, 'is this sustainable?', cls='arrow-lbl it'))
-    # Money: costs
-    if L==6:
-        s.append(f'<path d="M472,72 Q670,18 868,72" class="arrow dotted" marker-end="url(#{mk})"/>')
-        s.append(alabel(670, 44, 'costs'))
-    elif L>=7:
-        if L>=10:
-            s.append(f'<path d="M610,{Y0+66} L610,{Y1-50}" class="arrow dotted" marker-end="url(#{mk})"/>')
-            s.append(alabel(622, 262, 'costs', anchor='start'))
-        else:
-            path, mid = qarrow(P['meds'], P['money'], 50, 50, (712,232), mk, cls="arrow dotted")
-            s.append(path); s.append(alabel(708, 244, 'costs', anchor='start'))
     # Venn: Mind / Mental
     if L>=9:
-        mx,my=P['mind']; c=MS['mental']['color']; cx2,cy2 = chain_center((mx,my),1); cx2,cy2 = mx+40, my+14
-        s.append(f'<circle cx="{f(mx)}" cy="{f(my)}" r="{VR}" class="venn"/>')
+        mx0,my0=P['mind']; c=MS['mental']['color']; cx2,cy2 = mx0+40, my0+14
+        s.append(f'<circle cx="{f(mx0)}" cy="{f(my0)}" r="{VR}" class="venn"/>')
         s.append(f'<circle cx="{f(cx2)}" cy="{f(cy2)}" r="{VR}" class="venn" style="stroke:{c}"/>')
-        defs.append(f'<mask id="mk9-{L}" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="600"><rect x="0" y="0" width="{W}" height="600" fill="#fff"/><circle cx="{f(mx)}" cy="{f(my)}" r="{VR}" fill="#000"/></mask>')
+        defs.append(f'<mask id="mk9-{L}" maskUnits="userSpaceOnUse" x="0" y="0" width="{W}" height="600"><rect x="0" y="0" width="{W}" height="600" fill="#fff"/><circle cx="{f(mx0)}" cy="{f(my0)}" r="{VR}" fill="#000"/></mask>')
         s.append(f'<circle cx="{f(cx2)}" cy="{f(cy2)}" r="{VR}" fill="{c}" opacity=".32" mask="url(#mk9-{L})"/>')
-        s.append(icon('brain', mx+64, my+22, 30, c))
+        s.append(icon('brain', mx0+64, my0+22, 30, c))
         s.append(text(cx2, cy2+64, 'Mental', size=14))
-        s.append(f'<path d="M{f(mx+88)},{f(my+35)} L{f(mx+102)},{f(my+85)}" class="hair"/>')
-        s.append(f'<text x="{f(mx+106)}" y="{f(my+96)}" class="marker" font-size="13" fill="{c}">the difference</text>')
-    # Multi- chain: Multicomplexity, Multimorbidity, Multiverse
+        s.append(f'<path d="M{f(mx0+88)},{f(my0+35)} L{f(mx0+102)},{f(my0+85)}" class="hair"/>')
+        s.append(f'<text x="{f(mx0+106)}" y="{f(my0+96)}" class="marker" font-size="13" fill="{c}">the difference</text>')
+    # Multi- chain: Multimorbidity, Multiverse
     if L>=15:
         bx,by=P['multi']
         s.append(f'<circle cx="{f(bx)}" cy="{f(by)}" r="{VR}" class="venn"/>')
@@ -234,15 +244,13 @@ def draw(L):
         s.append(f'<circle cx="{f(c1[0])}" cy="{f(c1[1])}" r="{VR}" fill="#111" opacity=".92" stroke="var(--ink)" stroke-width="1" mask="url(#mk15-{L})"/>')
         s.append(icon('skull', bx+63, by-22, 30))
         s.append(text(c1[0], by+47, 'Multimorbidity', cls='creep', size=15))
-        s.append(f'<path d="M{f(bx+78)},{f(by-47)} L{f(bx+96)},{f(by-69)}" class="hair"/>')
-        s.append(f'<text x="{f(bx+116)}" y="{f(by-75)}" class="marker" font-size="13" fill="var(--ink)" text-anchor="end">more morbid</text>')
-    # Mufasa: sky cloud ghost above the house, speaking to Mind
+    # Mufasa
     if L>=16:
         s.append('<g transform="translate(300,-38)" opacity=".95"><rect x="-56" y="6" width="112" height="22" rx="11" class="cloud"/><circle cx="-38" cy="8" r="22" class="cloud"/><circle cx="-12" cy="-10" r="30" class="cloud"/><circle cx="20" cy="-4" r="27" class="cloud"/><circle cx="44" cy="10" r="20" class="cloud"/></g>')
         s.append(icon('lion', 300, -40, 66))
         s.append(text(300, 20, 'Mufasa', size=14))
-        mx,my=P['mind']
-        s.append(f'<path d="M318,-2 L{f(mx+26)},{f(my-44)}" class="beam" marker-end="url(#{mk})"/>')
+        mx0,my0=P['mind']
+        s.append(f'<path d="M318,-2 L{f(mx0+26)},{f(my0-44)}" class="beam" marker-end="url(#{mk})"/>')
         s.append('<text x="376" y="-30" class="marker" font-size="15" fill="#C8742A">Remember who you are.</text>')
     if L>=17:
         bx,by=P['multi']; c1=chain_center((bx,by),1); c2=chain_center((bx,by),2)
@@ -251,21 +259,18 @@ def draw(L):
         sx,sy = c1[0]+62, c1[1]-22
         s.append(f'<g class="spin" style="transform-origin:{f(sx)}px {f(sy)}px"><g transform="translate({f(sx)},{f(sy)})">{icon("spiral",0,0,30,"#D4BBFF")}</g></g>')
         s.append(text(c2[0]+4, by+31, 'Multiverse', cls='creep', size=15, fill='#8E5BD9'))
-        s.append(f'<path d="M{f(c2[0]+40)},{f(c2[1]-30)} L{f(c2[0]+62)},{f(c2[1]-56)}" class="hair"/>')
-        s.append(f'<text x="{f(c2[0]+66)}" y="{f(c2[1]-60)}" class="marker" font-size="13" fill="#8E5BD9">more verse</text>')
-    # Micturition arrows
+    # Micturition arrows (Medications, Mobility, Mind/Mental)
     if L>=10:
-        path, mid = qarrow(P['meds'], P['mict'], 50, 70, (735,235), mk)
-        s.append(path); s.append(alabel(712, 248, 'contributes', anchor='end'))
-        path, mid = qarrow(P['mobility'], P['mict'], 50, 70, (560,295), mk)
-        s.append(path); s.append(alabel(582, 268, 'also'))
-    # Axis along the floor: Matters Most (inside) to Matters Least (outside)
+        path,_ = qarrow(P['meds'], P['mict'], 50, 70, (735,235), mk); s.append(path)
+        path,_ = qarrow(P['mobility'], P['mict'], 50, 70, (560,295), mk); s.append(path)
+        mx0,my0=P['mind']
+        path,_ = qarrow((mx0+40,my0+14), P['mict'], VR, 70, (560,235), mk, cls="arrow dotted"); s.append(path)
+    # Axis along the floor
     if L>=11:
         s.append(f'<path d="M262,{FLOOR} L935,{FLOOR}" class="axis" marker-start="url(#{mk})" marker-end="url(#{mk})"/>')
         s.append(text(262, FLOOR+18, 'most', cls='axis-lbl', size=10, anchor='start'))
         s.append(text(935, FLOOR+18, 'least', cls='axis-lbl', size=10, anchor='end'))
         s.append(slot('least', 975, FLOOR, size=58, dy_label=55))
-        s.append(text(975, FLOOR+72, '(do not think about this)', cls='arrow-lbl it', size=10))
     # Miralax: subgroup of Medications
     if L>=12:
         s.append(f'<path d="M543,{Y0+27} L569,{Y0+23}" class="hair dotted"/>')
@@ -275,34 +280,37 @@ def draw(L):
     # Matters Middle straddling the floor
     if L>=13:
         s.append(slot('middle', 612, FLOOR, size=56, dy_label=55))
-        s.append(f'<path d="M300,{FLOOR+72} V{FLOOR+66} H925 V{FLOOR+72}" class="bracket"/>')
-        s.append(text(612, FLOOR+90, 'everything in between', cls='arrow-lbl it', size=11))
     # Magnets
     if L>=14:
         s.append(slot('magnets', 975, 250, size=76, label=False))
         s.append('<circle cx="975" cy="250" r="50" class="lens"/><line x1="1011" y1="286" x2="1032" y2="308" class="lens-h"/>')
         s.append(text(975, 322, 'Magnets', size=14))
-        s.append(text(975, 337, 'mechanism: undecided', cls='arrow-lbl it', size=10))
-        s.append(text(975, 351, "via the patient's lens", cls='arrow-lbl it', size=10))
     # starburst
     if L>=10:
         s.append(star(868, 392, 32, 20, 12, '#D0342C', ['VERY','IMPORTANT'], lsize=8))
     # slots
     for k,(x,y) in P.items():
-        if k=='mict': s.append(slot('mict', x, y, scale=1.3, dy_label=70))
+        if k in big: s.append(slot(k, x, y, scale=BIG, dy_label=70))
         else: s.append(slot(k, x, y))
+    # Matters Most crown (most important, from the start)
+    x,y=P['matters']; s.append(crown(x, y-42*BIG+4))
+    # Money tags: anything can cost money
+    if L>=6:
+        for k in ('mobility','meds','matters') + (('mict',) if L>=10 else ()):
+            x,y=P[k]; off = 46 if k in big else 36
+            s.append(badge(x+off, y-off+2))
     return "".join(s), "".join(defs)
 
 ARIA = {
- 5:"Five flat icons in a row with labels beneath: Mind, Mobility, Medications, Multicomplexity, Matters Most.",
- 6:"Six icons in a row: the five Ms plus a gold coin labeled Money, with a dotted arrow from Medications to Money labeled costs.",
+ 5:"Five flat icons in a row with labels beneath: Mind, Mobility, Medications, Multicomplexity, and Matters Most, which is drawn larger with a gold crown. Dotted arcs connect Multicomplexity to each of the others.",
+ 6:"Six icons in a row: the five Ms plus a gold coin labeled Money. Small gold dollar tags sit on Mobility, Medications, and Matters Most.",
  7:"Seven icons in two rows. A circuit from Maintenance runs above the top row and below the bottom row with an arrowhead to every M, labeled is this sustainable.",
  8:"The two rows of icons now sit inside a house outline labeled Milieu.",
  9:"Inside the house, a pink circle labeled Mental overlaps the circle around Mind. The sliver that does not overlap is labeled the difference.",
- 10:"Micturition, a yellow drop drawn larger than the other icons, joins the bottom row with a red starburst reading Very Important. Arrows from Medications and Mobility point to it.",
+ 10:"Micturition, a yellow drop drawn larger than the other icons, joins the bottom row with a red starburst reading Very Important. Arrows from Medications, Mobility, and the Mind and Mental pair point to it.",
  11:"An axis runs along the house floor from most to least. Matters Least, a dashed grey heart, sits outside the house at the far end.",
  12:"A small brown poop icon labeled Miralax is attached to the Medications capsule as a subgroup.",
- 13:"Matters Middle, a half-filled heart, straddles the floor line at the midpoint of the axis, above a bracket labeled everything in between.",
+ 13:"Matters Middle, a half-filled heart, straddles the floor line at the midpoint of the axis.",
  14:"A horseshoe magnet outside the house, seen through a magnifying lens, sends dashed field lines through the house and everything in it.",
  15:"A black circle with a skull labeled Multimorbidity overlaps the circle around Multicomplexity. The overhang is labeled more morbid.",
  16:"A cloud above the roof holds a lion's face labeled Mufasa. A dashed golden beam runs from the cloud down to Mind, with the words Remember who you are.",
@@ -364,17 +372,17 @@ sections = "".join([
    body_html=f'<dl class="ms ihi">{DL4}</dl>'),
  section(2,"The 5Ms", fig_row(5), source="Tinetti M, Huang A, Molnar F. J Am Geriatr Soc. 2017;65(9):2115.",
    body_html=f'<dl class="ms five">{DL5}</dl>', wide=True, body_after=True),
- section(3,"The 6Ms", fig_row(6), body_html=new_m('money',"Financial considerations. Whether the patient can afford what was just recommended. Medications cost Money."), wide=True),
- section(4,"The 7Ms", fig_row(7), body_html=new_m('maint',"Is this sustainable. Asked of every M."), wide=True),
- section(5,"The 8Ms", fig_row(8), body_html=new_m('milieu',"Environment. Everything now takes place inside a house."), wide=True),
- section(6,"The 9Ms", fig_row(9), body_html=new_m('mental',"Doubling down on Mind, because it is important. There is a difference. It is labeled."), wide=True),
- section(7,"The 10Ms", fig_row(10), body_html=new_m('mict',"A very important topic in geriatrics. Marked accordingly. Medications and Mobility contribute."), wide=True),
- section(8,"The 11Ms", fig_row(11), body_html=new_m('least',"What we do not need to think about, at the far end of the axis from Matters Most, outside the house."), wide=True),
- section(9,"The 12Ms", fig_row(12), body_html=new_m('miralax',"The sixth vital sign. Filed under Medications, as a subgroup."), wide=True),
- section(10,"The 13Ms", fig_row(13), body_html=new_m('middle',"Everything between Least and Most. Half in the house, half out."), wide=True),
+ section(3,"The 6Ms", fig_row(6), body_html=new_m('money',"Financial considerations. Not all patients, families, or systems will have the resources to optimize each of these considerations."), wide=True),
+ section(4,"The 7Ms", fig_row(7), body_html=new_m('maint',"Is this actually sustainable? Also the S in SMART goals. Ask this question of every M; each M should have a SMART goal: Specific, Measurable, Achievable, Relevant, Time-bound."), wide=True),
+ section(5,"The 8Ms", fig_row(8), body_html=new_m('milieu',"Consider the milieu: the environment, systems, and context in which the patient and the other components exist. Context is vital to understanding the patient."), wide=True),
+ section(6,"The 9Ms", fig_row(9), body_html=new_m('mental',"Similar to Mind, but also slightly different. Consider each."), wide=True),
+ section(7,"The 10Ms", fig_row(10), body_html=new_m('mict',"Often considered the sixth vital sign in medicine. Especially important in geriatric patients."), wide=True),
+ section(8,"The 11Ms", fig_row(11), body_html=new_m('least',"We have considered what Matters Most, but we also need to think about what we do not need to think about."), wide=True),
+ section(9,"The 12Ms", fig_row(12), body_html=new_m('miralax',"Some scholars consider it encompassed by Medications, but it is a vital one. Easily missed on review, since it tends to pass right through."), wide=True),
+ section(10,"The 13Ms", fig_row(13), body_html=new_m('middle',"Everything between Matters Most and Matters Least."), wide=True),
  section(11,"The 14Ms", fig_row(14), body_html=new_m('magnets',"The scientific community remains undecided on how they work. Consider them through the lens of your patient. A lens is provided."), wide=True),
  section(12,"The 15Ms", fig_row(15), body_html=new_m('morbid',"Like Multicomplexity, but more morbid."), wide=True),
- section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, witnessed by Simba. As Mufasa, by then a sky cloud ghost, says to Simba in Act 3: \u201cRemember who you are.\u201d"), wide=True),
+ section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, witnessed by Simba."), wide=True),
  section(14,"The N Ms", fig_multiverse(),
    body_html=new_m('verse',"Like Multimorbidity, but more verse. Have you considered all multiversal variations of all possible Ms of the patient? Consider one more below."),
    after_html='<div class="actions"><button type="button" id="addU">Consider another universe</button><span class="hint" id="ncount">N = 17</span></div>', wide=True),
@@ -388,12 +396,12 @@ CSS = '''
 :root[data-theme="dark"]{--paper:#0F1518;--surface:#182126;--ink:#E7ECEA;--muted:#97A4AA;--line:#2A3538;--accent:#4FB3C1;--accent-soft:#173C43;--disk:#16232D;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:'Newsreader',Georgia,'Times New Roman',serif;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.page{max-width:1040px;margin:0 auto;padding:36px 24px 120px}
+.page{max-width:1180px;margin:0 auto;padding:36px 24px 120px}
 .masthead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
 .masthead h1{font-size:clamp(28px,4vw,40px);margin:0}
 .masthead .eyebrow{margin:0}
 .stepper{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--surface);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.06)}
-.stepper .in{max-width:1040px;margin:0 auto;padding:12px 24px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
+.stepper .in{max-width:1180px;margin:0 auto;padding:12px 24px;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center}
 .stepper .prog{text-align:center;font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
 .stepper .prog b{color:var(--ink);font-weight:600}
 .dots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
@@ -421,7 +429,7 @@ h1{font-family:'Newsreader',Georgia,serif;font-weight:500;font-size:clamp(36px,5
 .fig .source{margin:0;font-style:italic;color:var(--muted);font-size:16px;max-width:70ch}
 figure{margin:0;min-width:0}
 svg.fig-svg{display:block;width:100%;height:auto;color:var(--muted)}
-#fig1 svg.fig-svg{max-width:520px}
+#s1 svg.fig-svg{max-width:620px}
 .ms{margin:0;display:grid;gap:12px 20px;align-content:start}
 .ms .row{display:grid;grid-template-columns:1fr;gap:4px}
 .ms dt{font-family:'IBM Plex Sans',system-ui,sans-serif;font-weight:600;font-size:14px;line-height:1.4}
@@ -461,6 +469,7 @@ footer a{color:var(--accent)}
 .lens{fill:none;stroke:var(--accent);stroke-width:4}
 .lens-h{stroke:var(--accent);stroke-width:9;stroke-linecap:round}
 .bus{fill:none;stroke:var(--muted);stroke-width:1.6}
+.web{fill:none;stroke:#2F6FA8;stroke-width:1.3;stroke-dasharray:2 4;opacity:.6}
 .cloud{fill:#FFF7E0;stroke:#E0B62B;stroke-width:1.2}
 .beam{fill:none;stroke:#C8742A;stroke-width:1.6;stroke-dasharray:6 5}
 .marker{font-family:'Permanent Marker',cursive}
