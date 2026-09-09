@@ -395,8 +395,8 @@ sections = "".join([
  section(12,"The 15Ms", fig_row(15), body_html=new_m('morbid',"Like Multicomplexity, but more morbid."), wide=True),
  section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, and this was witnessed by Simba."), wide=True),
  section(14,"The N Ms", fig_multiverse(),
-   body_html=new_m('verse',"Like Multimorbidity, but more verse. Have you considered all multiversal variations of all possible Ms of the patient? Consider one more below."),
-   after_html='<div class="actions"><button type="button" id="addU">Consider another universe</button><span class="hint" id="ncount">N = 17</span></div>', wide=True),
+   body_html=new_m('verse',"Like MultiCOMPLEXITY and MultiMORBIDITY, but more VERSE. Have you considered all multiversal variants of all possible Ms of the patient yet?"),
+   after_html='<div class="actions center"><button type="button" id="addU" class="big">Consider another universe</button><span class="hint" id="ncount">N = 17</span></div>', wide=True),
 ])
 
 FONTS = "https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=Permanent+Marker&family=Creepster&display=swap"
@@ -452,6 +452,9 @@ svg.fig-svg{display:block;width:100%;height:auto;color:var(--muted)}
 .new .chip{width:10px;height:10px;border-radius:50%;display:inline-block}
 .new dd{margin:0;font-size:17px}
 .actions{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.actions.center{justify-content:center;margin-top:22px}
+button.big{font-size:17px;padding:14px 28px;background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(20,108,122,.25)}
+button.big:hover{filter:brightness(1.08);background:var(--accent)}
 .hint{font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:13px;color:var(--muted)}
 button{font-family:'IBM Plex Sans',system-ui,sans-serif;font-weight:600;font-size:14px;color:var(--accent);background:var(--surface);border:1.5px solid var(--accent);border-radius:999px;padding:10px 18px;cursor:pointer}
 button:hover{background:var(--accent-soft)}
