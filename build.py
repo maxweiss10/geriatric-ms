@@ -131,7 +131,7 @@ def star(cx, cy, r1, r2, n, fill, lines, lsize=8, lfill="#fff", rot=0):
         rr = r1 if k%2==0 else r2
         pts.append(f"{f(cx+rr*math.cos(a))},{f(cy+rr*math.sin(a))}")
     return (f'<g transform="rotate({rot} {f(cx)} {f(cy)})"><polygon points="{" ".join(pts)}" fill="{fill}"/>'
-            + text(cx, cy+3, "|".join(lines), cls="lbl", size=lsize, fill=lfill) + '</g>')
+            + text(cx, cy+3, "|".join(lines), cls="lbl", size=lsize, fill=lfill, extra=' font-weight="700" stroke="#7A0000" stroke-width="0.5" paint-order="stroke"') + '</g>')
 
 def svg_wrap(inner, aria, vb, defs="", cls="", id_=""):
     idattr = f' id="{id_}"' if id_ else ""
@@ -223,7 +223,6 @@ def draw(L):
                 s.append(f'<path d="M{f(x)},{f(lab_bottom)} L{f(x)},{BUS_BOT}" class="bus"/>')
             else:
                 s.append(f'<path d="M{f(x)},{BUS_BOT} L{f(x)},{f(lab_bottom+4)}" class="bus" marker-end="url(#{mk})"/>')
-        s.append(alabel(490, 86, 'is this sustainable?', cls='arrow-lbl it'))
     # Venn: Mind / Mental
     if L>=9:
         mx0,my0=P['mind']; c=MS['mental']['color']; cx2,cy2 = mx0+40, my0+14
@@ -275,8 +274,7 @@ def draw(L):
     if L>=12:
         s.append(f'<path d="M543,{Y0+27} L569,{Y0+23}" class="hair dotted"/>')
         s.append(icon('poop', 525, Y0+31, 34, MS['miralax']['color']))
-        s.append(text(506, Y0+36, 'Miralax', size=13, anchor='end'))
-        s.append(text(525, Y0+8, '(a Medication)', cls='arrow-lbl it', size=9))
+        s.append(text(525, Y0+8, 'Miralax', size=13))
     # Matters Middle straddling the floor
     if L>=13:
         s.append(slot('middle', 612, FLOOR, size=56, dy_label=55))
@@ -287,29 +285,42 @@ def draw(L):
         s.append(text(975, 322, 'Magnets', size=14))
     # starburst
     if L>=10:
-        s.append(star(868, 392, 32, 20, 12, '#D0342C', ['VERY','IMPORTANT'], lsize=8))
+        s.append(star(866, 350, 44, 28, 12, '#E11D1D', ['VERY','IMPORTANT'], lsize=10.5))
     # slots
     for k,(x,y) in P.items():
         if k in big: s.append(slot(k, x, y, scale=BIG, dy_label=70))
         else: s.append(slot(k, x, y))
     # Matters Most crown (most important, from the start)
     x,y=P['matters']; s.append(crown(x, y-42*BIG+4))
-    # Money tags: anything can cost money
+    # Money tags: every other M can cost money
     if L>=6:
-        for k in ('mobility','meds','matters') + (('mict',) if L>=10 else ()):
-            x,y=P[k]; off = 46 if k in big else 36
+        for k,(x,y) in P.items():
+            if k=='money': continue
+            off = 46 if k in big else 36
             s.append(badge(x+off, y-off+2))
+        if L>=8: s.append(badge(456, 32))                      # Milieu
+        if L>=9:
+            mx0,my0=P['mind']; s.append(badge(mx0+80, my0-16))  # Mental
+        if L>=11: s.append(badge(1001, FLOOR-26))              # Matters Least
+        if L>=12: s.append(badge(546, Y0+47))                  # Miralax
+        if L>=13: s.append(badge(640, FLOOR-22))               # Matters Middle
+        if L>=14: s.append(badge(1013, 212))                   # Magnets
+        if L>=15:
+            bx,by=P['multi']; s.append(badge(bx+78, by+25))     # Multimorbidity
+        if L>=16: s.append(badge(352, -66))                    # Mufasa
+        if L>=17:
+            bx,by=P['multi']; c2=chain_center((bx,by),2); s.append(badge(c2[0]+35, c2[1]-32))  # Multiverse
     return "".join(s), "".join(defs)
 
 ARIA = {
  5:"Five flat icons in a row with labels beneath: Mind, Mobility, Medications, Multicomplexity, and Matters Most, which is drawn larger with a gold crown. Dotted arcs connect Multicomplexity to each of the others.",
- 6:"Six icons in a row: the five Ms plus a gold coin labeled Money. Small gold dollar tags sit on Mobility, Medications, and Matters Most.",
- 7:"Seven icons in two rows. A circuit from Maintenance runs above the top row and below the bottom row with an arrowhead to every M, labeled is this sustainable.",
+ 6:"Six icons in a row: the five Ms plus a gold coin labeled Money. A small gold dollar tag sits on every other M.",
+ 7:"Seven icons in two rows. A circuit from Maintenance runs above the top row and below the bottom row with an arrowhead to every M.",
  8:"The two rows of icons now sit inside a house outline labeled Milieu.",
  9:"Inside the house, a pink circle labeled Mental overlaps the circle around Mind. The sliver that does not overlap is labeled the difference.",
  10:"Micturition, a yellow drop drawn larger than the other icons, joins the bottom row with a red starburst reading Very Important. Arrows from Medications, Mobility, and the Mind and Mental pair point to it.",
  11:"An axis runs along the house floor from most to least. Matters Least, a dashed grey heart, sits outside the house at the far end.",
- 12:"A small brown poop icon labeled Miralax is attached to the Medications capsule as a subgroup.",
+ 12:"A small brown poop icon labeled Miralax sits beside the Medications capsule, joined to it by a dotted line.",
  13:"Matters Middle, a half-filled heart, straddles the floor line at the midpoint of the axis.",
  14:"A horseshoe magnet outside the house, seen through a magnifying lens, sends dashed field lines through the house and everything in it.",
  15:"A black circle with a skull labeled Multimorbidity overlaps the circle around Multicomplexity. The overhang is labeled more morbid.",
@@ -380,7 +391,7 @@ sections = "".join([
  section(8,"The 11Ms", fig_row(11), body_html=new_m('least',"We have considered what Matters Most, but we also need to think about what we do not need to think about."), wide=True),
  section(9,"The 12Ms", fig_row(12), body_html=new_m('miralax',"Some scholars consider it encompassed by Medications, but it is a vital one. Easily missed on review, since it tends to pass right through."), wide=True),
  section(10,"The 13Ms", fig_row(13), body_html=new_m('middle',"Everything between Matters Most and Matters Least."), wide=True),
- section(11,"The 14Ms", fig_row(14), body_html=new_m('magnets',"The scientific community remains undecided on how they work. Consider them through the lens of your patient. A lens is provided."), wide=True),
+ section(11,"The 14Ms", fig_row(14), body_html=new_m('magnets',"The scientific community remains undecided on how they work. Consider them through the lens of your patient."), wide=True),
  section(12,"The 15Ms", fig_row(15), body_html=new_m('morbid',"Like Multicomplexity, but more morbid."), wide=True),
  section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, witnessed by Simba."), wide=True),
  section(14,"The N Ms", fig_multiverse(),
