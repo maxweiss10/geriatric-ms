@@ -393,7 +393,7 @@ sections = "".join([
  section(10,"The 13Ms", fig_row(13), body_html=new_m('middle',"Everything between Matters Most and Matters Least."), wide=True),
  section(11,"The 14Ms", fig_row(14), body_html=new_m('magnets',"The scientific community remains undecided on how they work. Consider them through the lens of your patient."), wide=True),
  section(12,"The 15Ms", fig_row(15), body_html=new_m('morbid',"Like Multicomplexity, but more morbid."), wide=True),
- section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, witnessed by Simba."), wide=True),
+ section(13,"The 16Ms", fig_row(16), body_html=new_m('mufasa',"Father of Simba, brother of Scar. Sadly, Mufasa passed away at the hands of his brother, and this was witnessed by Simba."), wide=True),
  section(14,"The N Ms", fig_multiverse(),
    body_html=new_m('verse',"Like Multimorbidity, but more verse. Have you considered all multiversal variations of all possible Ms of the patient? Consider one more below."),
    after_html='<div class="actions"><button type="button" id="addU">Consider another universe</button><span class="hint" id="ncount">N = 17</span></div>', wide=True),
